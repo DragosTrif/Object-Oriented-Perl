@@ -6,10 +6,8 @@ use warnings;
 use Carp;
 use Data::Dumper;
 
-{ # encapsulating  $_count
+{
   my $_count = 0;
-  
-  # $_incr_count variable is accessible in this block 
   my $_incr_count = sub { ++$_count };
 
   sub new {
@@ -26,19 +24,19 @@ use Data::Dumper;
       _shelf     => $_[7],
       _rating    => $_[8],
     };
-  }
+}
 
-  sub get_count { $_count }
-} # end of encapsulation
+  sub get_count{ $_count }
+}
 
-
+# sub read_only
 sub read_only {
   croak "Can't change value of read-only attribute " . ( caller 1 )[3]
     if @_ > 1;
 }
 
 # $_[0] is $self;
-# this are acessor methods
+# this acessor methods
 sub get_name      { &read_only; $_[0]->{_name} }
 sub get_artist    { &read_only; $_[0]->{_artist} }
 sub get_publisher { &read_only; $_[0]->{_publisher} }

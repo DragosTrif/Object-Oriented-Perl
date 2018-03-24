@@ -21,3 +21,5 @@ print "$room\n";
 print "$shelf\n";
 
 print $music->set_rating, "\n";
+
+print $music->get_count, "\n";
