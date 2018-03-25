@@ -27,19 +27,4 @@ has rating    => ( is => 'rw', isa => 'Int', required => 1 );
   sub get_count { $_count }
 } # end of encapsulation
 
-sub set_location {
-  my ( $self, $room, $shelf ) = @_;
-
-  # overide the location if necesary
-  $self->{room}  = $room  if $room;
-  $self->{shelf} = $shelf if $shelf;
-  return ( $self->{room}, $self->{shelf} );
-}
-
-sub set_rating {
-  my ( $self, $rating ) = @_;
-  $self->{rating} = $rating if defined $rating;
-  return $self->{rating};
-}
-
 1;
