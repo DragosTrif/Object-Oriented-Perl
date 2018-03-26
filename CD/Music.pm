@@ -1,65 +1,68 @@
 package CD::Music;
-
+$VERSION = 1.00;
 use strict;
-use warnings;
 
 use Carp;
 use Data::Dumper;
 
-{ # encapsulating  $_count
+my %ALLOWED_ATTRIBUTS =
+  map { $_ => 1 } qw (name artist publisher ISBN tracks room shelf rating);
+
+{    # encapsulating  $_count
   my $_count = 0;
-  
-  # $_incr_count variable is accessible in this block 
   my $_incr_count = sub { ++$_count };
 
   sub new {
-    $_incr_count->();
-    my $class = @_;
+    my ( $class, $args_for ) = @_;
 
-    bless {
-      _name      => $_[1],
-      _artist    => $_[2],
-      _publisher => $_[3],
-      _ISBN      => $_[4],
-      _tracks    => $_[5],
-      _room      => $_[6],
-      _shelf     => $_[7],
-      _rating    => $_[8],
-    };
+    my $self = bless {} => $class;
+    $self->_initialize($args_for);
+
+    $_incr_count->();
+
+    return $self;
   }
 
   sub get_count { $_count }
-} # end of encapsulation
+}    # end encapsulating
 
+sub _initialize {
+  my ( $self, $arg_for ) = @_;
 
-sub read_only {
-  croak "Can't change value of read-only attribute " . ( caller 1 )[3]
-    if @_ > 1;
+  my %arg_for = %$arg_for;
+
+  foreach my $property ( keys %ALLOWED_ATTRIBUTS ) {
+    my $value = delete $arg_for{$property};
+
+    unless ( defined $value && $value =~ /\S/ ) {
+      croak("property '$property' must have at a value");
+    }
+
+    $self->{$property} = $value;
+
+  }
+
+  if ( my $extra = join ',', keys %arg_for ) {
+    croak("attr $extra not allowed");
+  }
 }
 
-# $_[0] is $self;
-# this are acessor methods
-sub get_name      { &read_only; $_[0]->{_name} }
-sub get_artist    { &read_only; $_[0]->{_artist} }
-sub get_publisher { &read_only; $_[0]->{_publisher} }
-sub get_ISBN      { &read_only; $_[0]->{_ISBN} }
-sub get_tracks    { &read_only; $_[0]->{_tracks} }
+sub name      { shift->{name} }
+sub artist    { shift->{artist} }
+sub publisher { shift->{publisher} }
+sub ISBN      { shift->{ISBN} }
+sub tracks    { shift->{tracks} }
+sub room      { shift->{room} }
+sub shelf     { shift->{shelf} }
+sub rating    { shift->{rating} }
 
-# location and rating are mutators
-# they can change the state on an object
 sub set_location {
   my ( $self, $shelf, $room ) = @_;
 
   # overide the location if necesary
-  $self->{_room}  = $room  if $room;
-  $self->{_shelf} = $shelf if $shelf;
-  return ( $self->{_room}, $self->{_shelf} );
+  $self->{room}  = $room  if $room;
+  $self->{shelf} = $shelf if $shelf;
+  return ( $self->{room}, $self->{shelf} );
 }
-
-sub set_rating {
-  my ( $self, $rating ) = @_;
-  $self->{_rating} = $rating if defined $rating;
-  return $self->{_rating};
-}
-
 1;
+
